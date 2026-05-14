@@ -1,0 +1,12 @@
+{
+  "name": "Fresher's Cup Live",
+  "short_name": "FresherCup",
+  "start_url": "/Home.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#ff3e3e",
+  "icons": [
+    { "src": "https://placehold.co/192x192/black/white?text=FC", "sizes": "192x192", "type": "image/png" },
+    { "src": "https://placehold.co/512x512/black/white?text=FC", "sizes": "512x512", "type": "image/png" }
+  ]
+}
