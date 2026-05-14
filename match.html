@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIVE | Fresher's Cup Final</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root { --bg: #000; --card: #111; --accent: #ff3e3e; --border: #222; --primary: #fff; }
+        body { background: var(--bg); color: var(--primary); font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* Video Section */
+        .video-section { width: 100%; background: #050505; position: relative; aspect-ratio: 16/9; border-bottom: 1px solid var(--border); }
+        .live-badge { position: absolute; top: 15px; left: 15px; background: var(--accent); padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 900; z-index: 10; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* Match Stats Bar */
+        .stats-container { padding: 10px 20px; background: var(--card); border-bottom: 1px solid var(--border); }
+        .stat-label { display: flex; justify-content: space-between; font-size: 0.65rem; font-weight: 800; margin-bottom: 4px; color: #888; }
+        .bar-bg { width: 100%; height: 6px; background: #222; border-radius: 10px; display: flex; overflow: hidden; }
+        #bar-cpe { background: #fff; width: 50%; transition: 0.5s ease; }
+        #bar-pap { background: var(--accent); width: 50%; transition: 0.5s ease; }
+
+        .match-bar { padding: 12px 20px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .score-info { font-weight: 900; font-size: 1.1rem; letter-spacing: -1px; }
+        .timer-info { font-weight: 800; color: var(--accent); }
+
+        /* Chat */
+        .chat-container { flex-grow: 1; display: flex; flex-direction: column; background: #080808; overflow: hidden; }
+        #chat-window { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .msg { font-size: 0.9rem; padding: 4px 0; border-bottom: 1px solid #111; }
+        .msg .user { font-weight: 800; color: #666; margin-right: 6px; }
+        .my-msg { border-left: 2px solid var(--accent); padding-left: 8px; }
+
+        .input-area { padding: 15px; background: var(--card); border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        input { flex-grow: 1; background: #1a1a1a; border: 1px solid var(--border); border-radius: 8px; padding: 12px; color: white; outline: none; }
+        button { background: var(--primary); color: #000; border: none; padding: 0 20px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="video-section" id="stream-box">
+        <div class="live-badge">LIVE</div>
+        <div style="height:100%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:800; color:#444;">WAITING FOR STREAM...</div>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-label"><span>CPE POSSESSION</span><span id="pos-text">50% - 50%</span><span>PAP POSSESSION</span></div>
+        <div class="bar-bg">
+            <div id="bar-cpe"></div>
+            <div id="bar-pap"></div>
+        </div>
+    </div>
+
+    <div class="match-bar">
+        <div class="score-info">CPE <span id="match-score">0 - 0</span> PAP</div>
+        <div class="timer-info" id="match-timer">00:00</div>
+    </div>
+
+    <div class="chat-container">
+        <div id="chat-window"></div>
+        <div class="input-area">
+            <input type="text" id="chat-input" placeholder="Say something...">
+            <button id="send-btn">SEND</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, push, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDozMVnewcY9Pw70jmFG7JyenpHlLjkNPM",
+            authDomain: "rock-paper-scissors-e1f1c.firebaseapp.com",
+            databaseURL: "https://rock-paper-scissors-e1f1c-default-rtdb.firebaseio.com",
+            projectId: "rock-paper-scissors-e1f1c",
+            storageBucket: "rock-paper-scissors-e1f1c.firebasestorage.app",
+            messagingSenderId: "521897557787",
+            appId: "1:521897557787:web:7b04c2ecebf0ea85821dbe"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Identity Logic
+        let username = localStorage.getItem('fc_user');
+        let userId = localStorage.getItem('fc_uid') || 'u' + Date.now();
+        localStorage.setItem('fc_uid', userId);
+
+        // Stream Sync
+        onValue(ref(db, 'match/streamUrl'), (snap) => {
+            const url = snap.val();
+            if(url) {
+                const embed = url.includes('youtube.com') ? url.replace("watch?v=", "embed/") : url;
+                document.getElementById('stream-box').innerHTML = `<iframe src="${embed}" allowfullscreen></iframe>`;
+            }
+        });
+
+        // Stats Sync
+        onValue(ref(db, 'match/stats'), (snap) => {
+            const s = snap.val() || { cpe: 50, pap: 50 };
+            document.getElementById('bar-cpe').style.width = s.cpe + '%';
+            document.getElementById('bar-pap').style.width = s.pap + '%';
+            document.getElementById('pos-text').innerText = `${s.cpe}% - ${s.pap}%`;
+        });
+
+        // Score/Timer Sync (Standard)
+        onValue(ref(db, 'match/score'), (snap) => { if(snap.val()) document.getElementById('match-score').innerText = snap.val(); });
+        onValue(ref(db, 'match/timer'), (snap) => { /* Timer Logic Same as Home.html */ });
+
+        // Chat Logic
+        const chatWin = document.getElementById('chat-window');
+        onValue(ref(db, 'messages'), (snap) => {
+            chatWin.innerHTML = '';
+            snap.forEach(child => {
+                const m = child.val();
+                const div = document.createElement('div');
+                div.className = `msg ${m.uid === userId ? 'my-msg' : ''}`;
+                div.innerHTML = `<span class="user">${m.username}</span> ${m.text}`;
+                
+                // Long press delete
+                let pressTimer;
+                div.onpointerdown = () => { pressTimer = setTimeout(() => {
+                    if(m.uid === userId && confirm("Delete message?")) remove(ref(db, `messages/${child.key}`));
+                }, 700)};
+                div.onpointerup = () => clearTimeout(pressTimer);
+
+                chatWin.appendChild(div);
+            });
+            chatWin.scrollTop = chatWin.scrollHeight;
+        });
+
+        document.getElementById('send-btn').onclick = () => {
+            if(!username) {
+                username = prompt("Enter your name:");
+                if(!username) return;
+                localStorage.setItem('fc_user', username);
+            }
+            const text = document.getElementById('chat-input').value;
+            if(!text) return;
+            push(ref(db, 'messages'), { username, text, uid: userId, time: serverTimestamp() });
+            document.getElementById('chat-input').value = '';
+        };
+    </script>
+</body>
+</html>
