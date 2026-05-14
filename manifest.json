@@ -1,7 +1,7 @@
 {
   "name": "Fresher's Cup Live",
   "short_name": "FresherCup",
-  "start_url": "/Home.html",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#ff3e3e",
