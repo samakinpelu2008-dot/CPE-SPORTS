@@ -1,7 +1,7 @@
 const CACHE_NAME = 'fresher-cup-v1';
 const ASSETS = [
   '/',
-  '/Home.html',
+  '/index.html',
   '/match.html',
   '/manifest.json',
   'https://unpkg.com/lucide@latest',
