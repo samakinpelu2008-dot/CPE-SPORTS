@@ -1,411 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Home Page</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fresher's Cup | Home</title>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- PWA Integration -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff3e3e">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/000/fff?text=FC">
+
     <style>
-        body{
-            background-color: white;
-            margin:0;
-            padding-top:70px;
-            font-family: 'Poppins', sans-serif;
+        :root {
+            --bg: #000000;
+            --card-bg: #111111;
+            --primary: #ffffff;
+            --accent: #ff3e3e;
+            --border: #222222;
+            --text-dim: #888888;
         }
 
-        /* BANNER */
-        .banner{
-            background: red;
-            padding: 5px 10px;
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg);
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            height: 60px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            box-sizing: border-box;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
         }
 
-        .menu-icon {
-            font-size: 40px;
-            cursor: pointer;
-            color:black;
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid #222;
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
         }
 
-        .profile img{
-            border-radius: 50px;
-            object-fit:cover;
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        body {
+            background-color: var(--bg);
+            color: var(--primary);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
         }
 
-        /* MENU */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: red;
-            display: none;
-            z-index: 3000;
+        header { padding: 30px 0 20px 0; }
+        header h1 { font-weight: 900; font-size: 2.2rem; letter-spacing: -1.5px; margin: 0; text-align: center; }
+        
+        .container { width: 92%; max-width: 400px; }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
         }
 
-        .border-example {
-            padding: 10px;
+        .timer-row {
             display: flex;
             justify-content: center;
-        }
-
-        .line{
-            border:1px solid white;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 16px;
-            left: 15px;
-            font-size: 20px;
-            color: black;
-            cursor: pointer;
-        }
-
-        .overlay-content {
-            margin-top: 80px;
-            padding-left: 20px;
-        }
-
-        .overlay-content a {
-            display: block;
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            margin: 15px 0;
-            text-decoration: none;
-        }
-
-        .space{
-            height: 25px;
-        }
-
-        .image-post img{
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .post{
-            background: red;
-            padding: 15px;
-        }
-
-        .post-title{
-            color: #FAA0A0;
-            font-size: 16px;
-            font-weight: bold;
-            line-height:1.0;
-        }
-
-        .post-text{
-            color: white;
-            font-size: 30px;
-            font-weight:bold;
-            line-height:1.0;
-        }
-
-        /* NEWS SECTION */
-        .news-item {
-            display: flex;
-            gap: 10px;
-            padding: 12px 15px;
-            margin: 10px 0;
-            cursor: pointer;
-            background: #ff0000; /* bright red */
-            border-radius: 8px;
-        }
-
-        .news-item img {
-            width: 100px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-
-        .news-text {
-            flex: 1;
-            display: flex;
             align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 15px;
+            text-transform: uppercase;
         }
 
-        .news-text h3 {
-            font-size: 16px;
-            color: white;
-            margin: 0;
-            line-height: 1.2;
+        .live-dot {
+            width: 8px; height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+            animation: blink 1.5s infinite;
         }
 
-        .news-line {
-            height: 1px;
-            background: #ddd;
-            margin: 10px 20px; /* space from edges */
-        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        /* Fixtures & Results */
-        .fixture-box {
-            background: #eee;
-            margin: 15px;
-            padding: 15px;
-        }
-
-        .fixture-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .match {
+        .match-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            align-items: center;
             text-align: center;
-            margin: 15px 0;
+            margin-bottom: 20px;
         }
 
-        .match img {
-            width: 60px;
-        }
+        .mini-logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 8px; border-radius: 50%; background: #1a1a1a; }
+        .team-name { font-size: 0.85rem; font-weight: 900; display: block; }
+        .score-center { font-size: 2.8rem; font-weight: 900; letter-spacing: -2px; }
 
-        .teams {
+        .cta-button {
             display: flex;
-            justify-content: space-around;
             align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: var(--primary);
+            color: #000;
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 0.9rem;
+            height: 50px;
+            border-radius: 12px;
+            transition: transform 0.2s active;
         }
 
-        .score-box {
-            background: red;
-            color: white;
-            padding: 10px;
-            font-size: 20px;
-            margin: 0 10px;
-            border-radius: 100px;
-        }
+        .cta-button:active { transform: scale(0.98); }
+
+        .chat-preview-box { height: 200px; display: flex; flex-direction: column; }
+        .message-list { flex-grow: 1; overflow-y: hidden; font-size: 0.85rem; }
+        .msg { margin-bottom: 10px; border-left: 3px solid var(--accent); padding-left: 10px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .msg .user { font-weight: 800; color: var(--text-dim); font-size: 0.75rem; display: block; }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-
 <body>
 
-<!-- BANNER -->
-<div class="banner">
-    <div class="menu-icon" onclick="toggleMenu()">&#8801;</div>
-
-    <div>
-        <img src="images/logo.png" height="50">
+    <div id="loader">
+        <div class="spinner"></div>
+        <div style="font-weight: 900; font-size: 0.7rem; letter-spacing: 2px; color: white;">INITIALIZING APP...</div>
     </div>
 
-    <div class="profile">
-        <a href="yam.html">
-            <img src="images/profile.jpg" width="50" height="50">
-        </a>
-    </div>
-</div>
+    <header>
+        <h1>FRESHER'S CUP</h1>
+    </header>
 
-<!-- MENU -->
-<div class="overlay" id="overlay">
-    <div class="border-example">
-        <img src="images/logo.png" height="50">
-    </div>
+    <main class="container">
+        <!-- Live Score Card -->
+        <section class="card">
+            <div class="timer-row">
+                <span class="live-dot"></span>
+                <span id="match-timer">00:00</span>
+            </div>
 
-    <div class="line"></div>
-
-    <div class="close-btn" onclick="toggleMenu()">&#x2716;</div>
-
-    <div class="overlay-content">                                               
-        <a href="#">NEWS</a>                
-        <a href="#">ABOUT</a>
-        <a href="#">CpeTV</a>                
-        <a href="#">TEAM</a>
-        <a href="#">FIXTURES & RESULTS</a>                  
-        <a href="#">ACCOUNT</a>
-        <a href="#">SHOP</a>                  
-        <a href="#">GIRLS</a>
-        <a href="#">SPORT ALBUM</a>
-        <a href="#">CPE PREDICT</a>
-        <a href="#">JOIN</a>
-        <a href="#">TEAM RECORDS</a>
-    </div>
-</div>
-
-<div class="space"></div>
-
-<!-- MAIN POST -->
-<div id="imageContainer"></div>
-<div id="postContainer"></div>
-
-<!-- NEWS SECTION -->
-<div style="padding:15px;">
-    <h2 style="color:red;">Latest News</h2>
-    <div id="newsContainer"></div>
-</div>
-
-<div style="text-align:center; margin:20px;">
-  <a href="news-list.html" style="
-    background:red;
-    color:white;
-    padding:10px 20px;
-    text-decoration:none;
-    border-radius:6px;
-    font-weight:bold;
-  ">
-    More News
-  </a>
-</div>
-
-<div class="space"></div>
-
-<h2 style="padding-left:15px;">Fixtures & Results</h2>
-<div id="fixturesContainer"></div>
-
-<!-- TOGGLE MENU SCRIPT -->
-<script>
-function toggleMenu() {
-    const overlay = document.getElementById("overlay");
-    overlay.style.display = (overlay.style.display === "block") ? "none" : "block";
-}
-</script>
-
-<!-- FIREBASE + CONTENT LOADING -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyCXEwNI2pRGtT_68xhTU7c5McUdz2HL8",
-    authDomain: "cpe--football.firebaseapp.com",
-    projectId: "cpe--football",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// MAIN POST
-async function loadMainPost() {
-    const snap = await getDoc(doc(db, "news", "main"));
-    if (snap.exists()) {
-        const data = snap.data();
-        document.getElementById("imageContainer").innerHTML =
-            `<div class="image-post"><img src="${data.image}"></div>`;
-        document.getElementById("postContainer").innerHTML =
-            `<div class="post">
-                <div class="post-title">${data.title}</div>
-                <div class="post-text">${data.text}</div>
-            </div>`;
-    }
-}
-
-// NEWS
-async function loadHomepageNews() {
-    const container = document.getElementById("newsContainer");
-    container.innerHTML = "";
-    for (let i = 1; i <= 5; i++) {
-        const snap = await getDoc(doc(db, "homepageNews", String(i)));
-        if (snap.exists()) {
-            const data = snap.data();
-            container.innerHTML += `
-                <div class="news-item" onclick="openNews(${i})">
-                    <img src="${data.image}">
-                    <div class="news-text"><h3>${data.title}</h3></div>
+            <div class="match-grid">
+                <div class="team">
+                    <img src="images/cpe.png" class="mini-logo" alt="CPE" onerror="this.src='https://placehold.co/60x60/800/fff?text=CPE'">
+                    <span class="team-name">CPE</span>
                 </div>
-            `;
+                <div class="score-center" id="live-score">0 - 0</div>
+                <div class="team">
+                    <img src="images/pap.png" class="mini-logo" alt="PAP" onerror="this.src='https://placehold.co/60x60/008/fff?text=PAP'">
+                    <span class="team-name">PAP</span>
+                </div>
+            </div>
+
+            <a href="match.html" class="cta-button">
+                <i data-lucide="play" style="width:18px; fill: currentColor;"></i>
+                <span>ENTER LIVE MATCH</span>
+            </a>
+        </section>
+
+        <!-- Chat Preview -->
+        <section class="card chat-preview-box">
+            <div style="font-size: 0.75rem; font-weight: 900; color: var(--text-dim); margin-bottom: 15px; letter-spacing: 1px;">FAN CHATTER</div>
+            <div class="message-list" id="chat-preview">
+                <div class="msg" style="border:none; color:#444;">Syncing messages...</div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDozMVnewcY9Pw70jmFG7JyenpHlLjkNPM",
+            authDomain: "rock-paper-scissors-e1f1c.firebaseapp.com",
+            databaseURL: "https://rock-paper-scissors-e1f1c-default-rtdb.firebaseio.com",
+            projectId: "rock-paper-scissors-e1f1c",
+            storageBucket: "rock-paper-scissors-e1f1c.firebasestorage.app",
+            messagingSenderId: "521897557787",
+            appId: "1:521897557787:web:7b04c2ecebf0ea85821dbe"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        let timerInterval = null;
+
+        // Hide Loader
+        window.addEventListener('load', () => {
+            setTimeout(() => { document.getElementById('loader').style.opacity = '0'; 
+            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 500); }, 800);
+        });
+
+        // Sync Score
+        onValue(ref(db, 'match/score'), (snapshot) => {
+            const score = snapshot.val();
+            if (score) document.getElementById('live-score').innerText = score;
+        });
+
+        // Sync Timer
+        onValue(ref(db, 'match/timer'), (snapshot) => {
+            const data = snapshot.val();
+            const display = document.getElementById('match-timer');
+            if (timerInterval) clearInterval(timerInterval);
+
+            if (data && data.state === 'running') {
+                timerInterval = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - data.startTime) / 1000);
+                    let mins = Math.floor(elapsed / 60);
+                    let secs = elapsed % 60;
+                    if (mins >= data.limit) {
+                        display.innerText = `${data.limit}:00 +${mins - data.limit}:${secs.toString().padStart(2, '0')}`;
+                    } else {
+                        display.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                    }
+                }, 1000);
+            } else {
+                display.innerText = "MATCH PAUSED";
+            }
+        });
+
+        // Sync Chat (Last 3 messages for preview)
+        const chatRef = query(ref(db, 'messages'), limitToLast(3));
+        onValue(chatRef, (snapshot) => {
+            const list = document.getElementById('chat-preview');
+            list.innerHTML = '';
+            snapshot.forEach(child => {
+                const m = child.val();
+                const div = document.createElement('div');
+                div.className = 'msg';
+                div.innerHTML = `<span class="user">@${m.username}</span> ${m.text}`;
+                list.appendChild(div);
+            });
+        });
+
+        lucide.createIcons();
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
         }
-    }
-}
-window.openNews = (id) => { window.location.href = "news.html?id=" + id; };
-
-// FIXTURES
-async function loadFixtures() {
-    const container = document.getElementById("fixturesContainer");
-
-    const nextSnap = await getDoc(doc(db, "fixtures", "next"));
-    if (nextSnap.exists()) {
-        const d = nextSnap.data();
-        container.innerHTML += `
-        <div class="fixture-box">
-            <div class="fixture-header"><span>NEXT FIXTURE</span></div>
-            <div class="match">
-                <p>${d.date}</p>
-                <p>${d.competition}</p>
-                <div class="teams">
-                    <div><img src="${d.team1Logo}"><p>${d.team1}</p></div>
-                    <div><p>${d.time}</p></div>
-                    <div><img src="${d.team2Logo}"><p>${d.team2}</p></div>
-                </div>
-            </div>
-        </div>`;
-    }
-
-    const lastSnap = await getDoc(doc(db, "fixtures", "last"));
-    if (lastSnap.exists()) {
-        const d = lastSnap.data();
-        container.innerHTML += `
-        <div class="fixture-box">
-            <div class="fixture-header"><span>LAST RESULT</span></div>
-            <div class="match">
-                <p>${d.date}</p>
-                <p>${d.competition}</p>
-                <div class="teams">
-                    <p>${d.team1}</p>
-                    <div class="score-box">${d.score1}</div>
-                    <div class="score-box">${d.score2}</div>
-                    <p>${d.team2}</p>
-                </div>
-            </div>
-        </div>`;
-    }
-}
-
-// LOAD ALL
-loadMainPost();
-loadHomepageNews();
-loadFixtures();
-</script>
-<!-- FOOTER -->
-<footer style="background:#F88379; color:white; padding:30px 15px; font-family:'Poppins', sans-serif;">
-  <div style="text-align:center; margin-bottom:20px;">
-    <img src="images/logo.png" height="80" alt="Club Logo">
-  </div>
-
-  <div style="text-align:center; margin-bottom:15px;">
-    <button style="background:#0A1B3F; color:white; border:1px solid white; padding:5px 10px; border-radius:5px; cursor:pointer;">EN</button>
-    <a href="#top" style="margin-left:20px; color:white; text-decoration:underline; font-weight:bold;">Back to the top↑</a>
-  </div>
-
-  <div style="text-align:center; margin-bottom:20px; font-size:20px;">
-    <!-- Social Icons (replace with your images/icons) -->
-    <div style="font-size: 24px; text-align:center; margin-bottom:20px; color:white;">
-  <a href="https://youtube.com" target="_blank" style="margin:0 8px; color:white;">
-    <i class="fab fa-youtube"></i>
-  </a>
-  <a href="https://instagram.com" target="_blank" style="margin:0 8px; color:white;">
-    <i class="fab fa-instagram"></i>
-  </a>
-  <a href="https://x.com" target="_blank" style="margin:0 8px; color:white;">
-    <i class="fab fa-x-twitter"></i>
-  </a>
-  <a href="https://facebook.com" target="_blank" style="margin:0 8px; color:white;">
-    <i class="fab fa-facebook-f"></i>
-  </a>
-  <a href="https://linkedin.com" target="_blank" style="margin:0 8px; color:white;">
-    <i class="fab fa-linkedin-in"></i>
-  </a>
-  <a href="https://tiktok.com" target="_blank" style="margin:0 8px; color:white;">
-    <i class="fab fa-tiktok"></i>
-  </a>
-</div>
-
-  <div style="text-align:center; font-size:14px;">
-    Computer Engineering FT Ltd 2025
-  </div>
-  </div>
-</footer>
+    </script>
 </body>
-          </html>
+</html>
